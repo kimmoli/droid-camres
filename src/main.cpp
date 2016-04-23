@@ -13,11 +13,17 @@
 
 int main(int argc, char *argv[])
 {
-    Q_UNUSED(argc);
-    Q_UNUSED(argv);
+    int cam = 0;
+    if (argc > 1)
+    {
+        if (sscanf (argv[1], "%i", &cam)!=1)
+        {
+            cam = 0;
+        }
+    }
 
     Camres cr;
-    Q_UNUSED(cr);
+    cr.scan(cam);
 
     return 0;
 }

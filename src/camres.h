@@ -2,6 +2,8 @@
 #define CAMRES_H
 #include <QObject>
 
+#include <gst/gst.h>
+
 class Q_DECL_EXPORT Camres : public QObject
 {
     Q_OBJECT
@@ -9,8 +11,8 @@ class Q_DECL_EXPORT Camres : public QObject
 public:
     explicit Camres(QObject *parent = 0);
     virtual ~Camres();
-    void scan();
-
+    void scan(int cam);
+    QList<QSize> parse(GstCaps *caps);
 };
 
 

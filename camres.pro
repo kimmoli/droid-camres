@@ -2,7 +2,12 @@ TARGET = camres
 
 CONFIG += sailfishapp
 CONFIG += link_pkgconfig
-PKGCONFIG += gstreamer-1.0
+PKGCONFIG += gstreamer-1.0 gstreamer-pbutils-1.0
+
+gep.files = video.gep
+gep.path = /etc
+
+INSTALLS += gep
 
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
@@ -14,4 +19,5 @@ HEADERS += \
     src/camres.h
 
 OTHER_FILES += \
-    rpm/camres.spec
+    rpm/camres.spec \
+    video.gep

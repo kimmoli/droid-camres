@@ -1,0 +1,24 @@
+[GStreamer Encoding Target]
+name=video-profile
+category=device
+description=Video encoding profiles
+
+[profile-video]
+name=video-profile
+type=container
+description[c]=Standard MPEG-4 video profile
+format=video/quicktime, variant=(string)iso
+
+[streamprofile-video-0]
+parent=video-profile
+type=video
+format=video/x-h264
+presence=1
+pass=0
+variableframerate=true
+
+[streamprofile-video-1]
+parent=video-profile
+type=audio
+format=audio/mpeg, mpegversion=(int)4
+presence=1
