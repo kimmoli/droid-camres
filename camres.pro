@@ -5,7 +5,7 @@ CONFIG += link_pkgconfig
 PKGCONFIG += gstreamer-1.0 gstreamer-pbutils-1.0
 
 gep.files = video.gep
-gep.path = /etc
+gep.path = /usr/share/camres
 
 INSTALLS += gep
 

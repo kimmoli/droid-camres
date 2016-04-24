@@ -1,5 +1,6 @@
 #include "camres.h"
 #include <unistd.h>
+#include <math.h>
 #include <QDir>
 #include <QDebug>
 
@@ -97,7 +98,7 @@ QList<QPair<QString, QStringList> > Camres::getResolutions(int cam, QStringList 
     g_object_set(cameraBin, "viewfinder-sink", fakeviewfinder, NULL);
 
     GError *error = NULL;
-    GstEncodingTarget *target = gst_encoding_target_load_from_file("/etc/video.gep", &error);
+    GstEncodingTarget *target = gst_encoding_target_load_from_file("/usr/share/camres/video.gep", &error);
 
     if (!target)
     {
@@ -225,3 +226,35 @@ QStringList Camres::parse(GstCaps *caps)
     return res;
 }
 
+QString Camres::aspectRatioForResolution(const QString& size)
+{
+    static QMap<float, QString> ratios;
+    int width, height;
+
+    width = size.split("x").at(0).toInt();
+    height = size.split("x").at(1).toInt();
+
+    if (ratios.isEmpty())
+    {
+        ratios[1.0] = "1:1";
+        ratios[1.2] = "5:4";
+        ratios[1.3] = "4:3";
+        ratios[1.5] = "3:2";
+        ratios[1.6] = "16:10";
+        ratios[1.7] = "16:9";
+        ratios[1.8] = "9:5";
+    }
+
+    float r = (width * 1.0) / height;
+    r = floor(r * 10) / 10.0;
+
+    for (QMap<float, QString>::const_iterator iter = ratios.constBegin(); iter != ratios.constEnd(); iter++)
+    {
+        if (qFuzzyCompare (r, iter.key()))
+        {
+            return iter.value();
+        }
+    }
+
+    return QString("?:?");
+}

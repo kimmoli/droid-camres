@@ -15,6 +15,7 @@ public:
     QList<QPair<QString, int> > getCameras();
     QList<QPair<QString, QStringList> > getResolutions(int cam, QStringList whichCaps);
     QStringList parse(GstCaps *caps);
+    static QString aspectRatioForResolution(const QString& size);
 };
 
 

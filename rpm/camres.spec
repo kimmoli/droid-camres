@@ -10,7 +10,7 @@ Version:    0.0.1
 Release:    1
 Group:      Qt/Qt
 License:    WTFPL
-URL:        https://github.com/kimmoli/dimmy
+URL:        https://github.com/kimmoli/camres
 Source0:    %{name}-%{version}.tar.bz2
 Requires:   sailfishsilica-qt5 >= 0.10.9
 BuildRequires:  pkgconfig(sailfishapp) >= 1.0.2
@@ -22,15 +22,14 @@ BuildRequires:  pkgconfig(gstreamer-pbutils-1.0)
 BuildRequires:  desktop-file-utils
 
 %description
-Commandline tool to make screen dimmer
+Commandline tool to get droidcam camera resolutions
 
 %prep
 %setup -q -n %{name}-%{version}
 
 %build
 
-%qtc_qmake5  \
-    VERSION=%{version}
+%qtc_qmake5 VERSION=%{version}
 
 %qtc_make %{?_smp_mflags}
 
@@ -41,4 +40,5 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root,-)
 %{_bindir}
-/etc/video.gep
+%{_datadir}/%{name}
+
