@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
             {
                 for (m=0 ; m<res.size() ; m++)
                 {
-                    if (qMin(screenGeometry.height(), screenGeometry.width()) ==
+                    if (qMin(screenGeometry.height(), screenGeometry.width()) >=
                         qMin(res.at(m).split("x").at(0).toInt(), res.at(m).split("x").at(1).toInt()) &&
                         qMax(screenGeometry.height(), screenGeometry.width()) >=
                         qMax(res.at(m).split("x").at(0).toInt(), res.at(m).split("x").at(1).toInt()))
