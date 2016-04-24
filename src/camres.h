@@ -11,8 +11,10 @@ class Q_DECL_EXPORT Camres : public QObject
 public:
     explicit Camres(QObject *parent = 0);
     virtual ~Camres();
-    void scan(int cam);
-    QList<QSize> parse(GstCaps *caps);
+
+    QList<QPair<QString, int> > getCameras();
+    QList<QPair<QString, QStringList> > getResolutions(int cam, QStringList whichCaps);
+    QStringList parse(GstCaps *caps);
 };
 
 

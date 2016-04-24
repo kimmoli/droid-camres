@@ -1,7 +1,7 @@
 #include "camres.h"
+#include <unistd.h>
 #include <QDir>
 #include <QDebug>
-#include <QSize>
 
 #include <gst/pbutils/encoding-profile.h>
 #include <gst/pbutils/encoding-target.h>
@@ -9,7 +9,6 @@
 Camres::Camres(QObject *parent) :
     QObject(parent)
 {
-    qDebug() << "hoplaa!";
     gst_init(0, 0);
 }
 
@@ -17,158 +16,149 @@ Camres::~Camres()
 {
 }
 
-void Camres::scan(int cam)
+QList<QPair<QString, int> > Camres::getCameras()
 {
-    QList<QPair<QString, QVariant> > devices;
+    QList<QPair<QString, int> > res;
 
-    // Too bad there's no way to get the values of an enum without creating the element :(
     GstElement *elem = gst_element_factory_make("droidcamsrc", NULL);
     if (!elem)
     {
-        qWarning() << "QtCamScanner: Failed to create an instance of droidcamsrc";
-        return;
+        printf("Camres error: Failed to create an instance of droidcamsrc.\n");
+        return res;
     }
 
     GParamSpec *spec = g_object_class_find_property(G_OBJECT_GET_CLASS(elem), "camera-device");
     if (!spec)
     {
-        qWarning() << "QtCamScanner: Failed to get property camera-device";
+        printf("Camres error: Failed to get property camera-device\n");
         gst_object_unref(elem);
-        return;
+        return res;
     }
 
     if (!G_IS_PARAM_SPEC_ENUM(spec))
     {
-        qWarning() << "QtCamScanner: Property camera-device is not an enum";
+        printf("Camres error: Property camera-device is not an enum.\n");
         gst_object_unref(elem);
-        return;
+        return res;
     }
 
     GParamSpecEnum *e = G_PARAM_SPEC_ENUM(spec);
-    // First add the default:
-    devices << qMakePair<QString, QVariant>(e->enum_class->values[e->default_value].value_name,
-                        QByteArray::number(e->default_value));
+
+    res << qMakePair<QString, int>(e->enum_class->values[e->default_value].value_name, (int)e->default_value);
 
     for (int x = e->enum_class->minimum; x <= e->enum_class->maximum; x++)
     {
         if (x != e->default_value)
         {
-            devices << qMakePair<QString, QVariant>(e->enum_class->values[x].value_name, QByteArray::number(x));
+            res << qMakePair<QString, int>(e->enum_class->values[x].value_name, x);
         }
     }
 
-    qDebug() << "Found" << devices.size() << "cameras:" << devices;
+    gst_object_unref(elem);
 
-    if (cam >= devices.size())
-    {
-        qWarning() << "too large device number";
-        gst_object_unref(elem);
-        return;
-    }
+    return res;
+}
+
+
+QList<QPair<QString, QStringList> > Camres::getResolutions(int cam, QStringList whichCaps)
+{
+    QList<QPair<QString, QStringList> > res;
 
     GstElement *cameraBin = gst_element_factory_make("camerabin", NULL);
+
     if (!cameraBin)
     {
-        qWarning() << "failed to create cameraBin";
-        gst_object_unref(elem);
-        return;
+        printf("Camres error: Failed to create camerabin.\n");
+        return res;
     }
 
-    qDebug() << "creating videosource";
     GstElement *videoSource = gst_element_factory_make("droidcamsrc", NULL);
     if (!videoSource)
     {
-        qWarning() << "failed to create videoSource";
-        gst_object_unref(elem);
+        printf("Camres error: Failed to create videoSource.\n");
         gst_object_unref(cameraBin);
-        return;
+        return res;
     }
 
-    qDebug() << "setting camera source";
     g_object_set(cameraBin, "camera-source", videoSource, NULL);
+    g_object_set(videoSource, "camera-device", cam, NULL);
 
-    qDebug() << "using device" << devices.at(cam).second.toInt() << devices.at(cam).first;
-    g_object_set(videoSource, "camera-device", devices.at(cam).second.toInt(), NULL);
-
-    qDebug() << "create fakeviewfinder";
     GstElement *fakeviewfinder = gst_element_factory_make("fakesink", NULL);
     if (!fakeviewfinder)
     {
         {
-            qWarning() << "failed to create fake viewfinder";
-            gst_object_unref(elem);
+            printf("Camres error: Failed to create fake viewfinder.\n");
+            gst_object_unref(videoSource);
             gst_object_unref(cameraBin);
-            return;
+            return res;
         }
     }
 
-    qDebug() << "setting viewfinder";
     g_object_set(cameraBin, "viewfinder-sink", fakeviewfinder, NULL);
-
-    qDebug() << "setting video profile";
 
     GError *error = NULL;
     GstEncodingTarget *target = gst_encoding_target_load_from_file("/etc/video.gep", &error);
 
     if (!target)
     {
-        qCritical() << "Failed to load encoding target" << error->message;
+        printf("Camres error: Failed to load encoding target: %s\n", qPrintable(error->message));
         g_error_free(error);
-        return;
+        gst_object_unref(fakeviewfinder);
+        gst_object_unref(videoSource);
+        gst_object_unref(cameraBin);
+        return res;
     }
 
     GstEncodingProfile *profile = gst_encoding_target_get_profile(target, "video-profile");
     if (!profile)
     {
-        qCritical() << "Failed to load encoding profile";
+        printf("Camres error: Failed to load encoding profile.\n");
+        gst_object_unref(fakeviewfinder);
+        gst_object_unref(videoSource);
+        gst_object_unref(cameraBin);
         gst_encoding_target_unref(target);
-        return;
+        return res;
     }
 
     gst_encoding_target_unref(target);
 
     g_object_set(cameraBin, "video-profile", profile, NULL);
 
-    qDebug() << "playing";
     if (gst_element_set_state (GST_ELEMENT (cameraBin), GST_STATE_PLAYING) == GST_STATE_CHANGE_FAILURE)
     {
-        qWarning() << "failed to play";
+        printf("Camres error: Failed to start playback.\n");
+        gst_object_unref(fakeviewfinder);
+        gst_object_unref(videoSource);
+        gst_object_unref(cameraBin);
+        return res;
     }
 
-    qDebug() << "getting caps";
     GstCaps *caps = NULL;
 
     int i;
 
-    g_object_get(cameraBin, "image-capture-supported-caps", &caps, NULL);
-    QList<QSize> imageResolutions = parse(caps);
-    qDebug() << "Supported image resolutions.";
-    for (i=0; i<imageResolutions.size() ; i++)
-        qDebug() << imageResolutions.at(i);
-
-    g_object_get(cameraBin, "video-capture-supported-caps", &caps, NULL);
-    QList<QSize> videoResolutions = parse(caps);
-    qDebug() << "Supported video resolutions:";
-    for (i=0; i<videoResolutions.size() ; i++)
-        qDebug() << videoResolutions.at(i);
-
-    g_object_get(cameraBin, "viewfinder-supported-caps", &caps, NULL);
-    QList<QSize> viewfinderResolutions = parse(caps);
-    qDebug() << "Supported viewfinder resolutions:";
-    for (i=0; i<viewfinderResolutions.size() ; i++)
-        qDebug() << viewfinderResolutions.at(i);
+    for (i=0 ; i<whichCaps.size() ; i++)
+    {
+        g_object_get(cameraBin, whichCaps.at(i).toLatin1().constData(), &caps, NULL);
+        res.append(qMakePair<QString, QStringList>(whichCaps.at(i), parse(caps)));
+    }
 
     gst_caps_unref(caps);
-    gst_object_unref(elem);
+    gst_element_set_state (GST_ELEMENT (cameraBin), GST_STATE_NULL);
+    gst_object_unref(fakeviewfinder);
+    gst_object_unref(videoSource);
+    gst_object_unref(cameraBin);
+
+    return res;
 }
 
-QList<QSize> Camres::parse(GstCaps *caps)
+QStringList Camres::parse(GstCaps *caps)
 {
-    QList<QSize> res;
+    QStringList res;
+    QString tmp;
 
     if (!caps)
     {
-        qWarning() << "no caps";
         return res;
     }
 
@@ -180,7 +170,6 @@ QList<QSize> Camres::parse(GstCaps *caps)
 
         if (!width || !height)
         {
-            qWarning() << "queryResolutions: no dimensions";
             continue;
         }
 
@@ -189,8 +178,9 @@ QList<QSize> Camres::parse(GstCaps *caps)
 
         if (!width_is_list && !height_is_list)
         {
-            if (!res.contains(QSize(g_value_get_int(width), g_value_get_int(height))))
-                res << QSize(g_value_get_int(width), g_value_get_int(height));
+            tmp = QString("%1x%2").arg(g_value_get_int(width)).arg(g_value_get_int(height));
+            if (!res.contains(tmp))
+                res.append(tmp);
         }
         else if (width_is_list && height_is_list)
         {
@@ -202,8 +192,9 @@ QList<QSize> Camres::parse(GstCaps *caps)
                 for (guint hc = 0; hc < hs; hc++)
                 {
                     int h = g_value_get_int(gst_value_list_get_value(height, hc));
-                    if (!res.contains(QSize(w, h)))
-                        res << QSize(w, h);
+                    tmp = QString("%1x%2").arg(w).arg(h);
+                    if (!res.contains(tmp))
+                        res.append(tmp);
                 }
             }
         }
@@ -213,8 +204,9 @@ QList<QSize> Camres::parse(GstCaps *caps)
             for (guint i = 0; i < gst_value_list_get_size(width); i++)
             {
                 int w = g_value_get_int(gst_value_list_get_value(width, i));
-                if (!res.contains(QSize(w, h)))
-                    res << QSize(w, h);
+                tmp = QString("%1x%2").arg(w).arg(h);
+                if (!res.contains(tmp))
+                    res.append(tmp);
             }
         }
         else if (height_is_list)
@@ -223,8 +215,9 @@ QList<QSize> Camres::parse(GstCaps *caps)
             for (guint i = 0; i < gst_value_list_get_size(height); i++)
             {
                 int h = g_value_get_int(gst_value_list_get_value(height, i));
-                if (!res.contains(QSize(w, h)))
-                    res << QSize(w, h);
+                tmp = QString("%1x%2").arg(w).arg(h);
+                if (!res.contains(tmp))
+                    res.append(tmp);
             }
         }
     }
