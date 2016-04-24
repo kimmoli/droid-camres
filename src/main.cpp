@@ -57,6 +57,8 @@ int main(int argc, char *argv[])
     caps << "video-capture-supported-caps";
     caps << "viewfinder-supported-caps";
 
+    QString vfr43, vfr169;
+
     for (i=0 ; i<cameras.size() ; i++)
     {
         int j,m;
@@ -81,7 +83,6 @@ int main(int argc, char *argv[])
 
             if (resolutions.at(j).first.startsWith("viewfinder"))
             {
-                QString vfr43, vfr169;
                 for (m=0 ; m<res.size() ; m++)
                 {
                     if (qMin(screenGeometry.height(), screenGeometry.width()) ==
@@ -101,13 +102,6 @@ int main(int argc, char *argv[])
 
                     printf("%s (%s)\n", qPrintable(res.at(m)), qPrintable(Camres::aspectRatioForResolution(res.at(m))));
                 }
-                if (toFile)
-                {
-                    *ts << S(8) << "\"viewfinder\":" << endl << S(8) << "{" << endl
-                        << S(12) << "\"viewfinderResolution_4_3\" : \"" << vfr43 << "\"," << endl
-                        << S(12) << "\"viewfinderResolution_16_9\" : \"" << vfr169 << "\"" << endl
-                        << S(8) << "}" << endl;
-                }
             }
             else
             {
@@ -125,18 +119,23 @@ int main(int argc, char *argv[])
                 }
 
                 if (toFile)
-                    *ts << S(8) << ((j == resolutions.size()-1) ? "]" : "],") << endl;
+                    *ts << S(8) << ((j == 0) ? "]," : "]") << endl;
             }
         }
         if (toFile)
-            *ts << S(4) << ((i == cameras.size()-1) ? "}" : "},") << endl;
-
+            *ts << S(4) << "}," << endl;
     }
+
     if (toFile)
+    {
+        *ts << S(4) << "\"viewfinder\":" << endl << S(4) << "{" << endl
+            << S(8) << "\"viewfinderResolution_4_3\" : \"" << vfr43 << "\"," << endl
+            << S(8) << "\"viewfinderResolution_16_9\" : \"" << vfr169 << "\"" << endl
+            << S(4) << "}" << endl;
         *ts << "}" << endl;
 
-    if (toFile)
         file.close();
+    }
 
     return EXIT_SUCCESS;
 }
