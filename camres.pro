@@ -13,10 +13,12 @@ DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 SOURCES += \
     src/camres.cpp \
-    src/main.cpp
+    src/main.cpp \
+    src/outputgen.cpp
 
 HEADERS += \
-    src/camres.h
+    src/camres.h \
+    src/outputgen.h
 
 OTHER_FILES += \
     rpm/camres.spec \

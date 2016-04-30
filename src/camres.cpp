@@ -24,21 +24,21 @@ QList<QPair<QString, int> > Camres::getCameras()
     GstElement *elem = gst_element_factory_make("droidcamsrc", NULL);
     if (!elem)
     {
-        printf("Camres error: Failed to create an instance of droidcamsrc.\n");
+        fprintf(stderr, "Camres error: Failed to create an instance of droidcamsrc.\n");
         return res;
     }
 
     GParamSpec *spec = g_object_class_find_property(G_OBJECT_GET_CLASS(elem), "camera-device");
     if (!spec)
     {
-        printf("Camres error: Failed to get property camera-device\n");
+        fprintf(stderr, "Camres error: Failed to get property camera-device\n");
         gst_object_unref(elem);
         return res;
     }
 
     if (!G_IS_PARAM_SPEC_ENUM(spec))
     {
-        printf("Camres error: Property camera-device is not an enum.\n");
+        fprintf(stderr, "Camres error: Property camera-device is not an enum.\n");
         gst_object_unref(elem);
         return res;
     }
@@ -69,14 +69,14 @@ QList<QPair<QString, QStringList> > Camres::getResolutions(int cam, QStringList 
 
     if (!cameraBin)
     {
-        printf("Camres error: Failed to create camerabin.\n");
+        fprintf(stderr, "Camres error: Failed to create camerabin.\n");
         return res;
     }
 
     GstElement *videoSource = gst_element_factory_make("droidcamsrc", NULL);
     if (!videoSource)
     {
-        printf("Camres error: Failed to create videoSource.\n");
+        fprintf(stderr, "Camres error: Failed to create videoSource.\n");
         gst_object_unref(cameraBin);
         return res;
     }
@@ -88,7 +88,7 @@ QList<QPair<QString, QStringList> > Camres::getResolutions(int cam, QStringList 
     if (!fakeviewfinder)
     {
         {
-            printf("Camres error: Failed to create fake viewfinder.\n");
+            fprintf(stderr, "Camres error: Failed to create fake viewfinder.\n");
             gst_object_unref(videoSource);
             gst_object_unref(cameraBin);
             return res;
@@ -102,7 +102,7 @@ QList<QPair<QString, QStringList> > Camres::getResolutions(int cam, QStringList 
 
     if (!target)
     {
-        printf("Camres error: Failed to load encoding target: %s\n", qPrintable(error->message));
+        fprintf(stderr, "Camres error: Failed to load encoding target: %s\n", qPrintable(error->message));
         g_error_free(error);
         gst_object_unref(fakeviewfinder);
         gst_object_unref(videoSource);
@@ -113,7 +113,7 @@ QList<QPair<QString, QStringList> > Camres::getResolutions(int cam, QStringList 
     GstEncodingProfile *profile = gst_encoding_target_get_profile(target, "video-profile");
     if (!profile)
     {
-        printf("Camres error: Failed to load encoding profile.\n");
+        fprintf(stderr, "Camres error: Failed to load encoding profile.\n");
         gst_object_unref(fakeviewfinder);
         gst_object_unref(videoSource);
         gst_object_unref(cameraBin);
@@ -127,7 +127,7 @@ QList<QPair<QString, QStringList> > Camres::getResolutions(int cam, QStringList 
 
     if (gst_element_set_state (GST_ELEMENT (cameraBin), GST_STATE_PLAYING) == GST_STATE_CHANGE_FAILURE)
     {
-        printf("Camres error: Failed to start playback.\n");
+        fprintf(stderr, "Camres error: Failed to start playback.\n");
         gst_object_unref(fakeviewfinder);
         gst_object_unref(videoSource);
         gst_object_unref(cameraBin);
@@ -255,6 +255,8 @@ QString Camres::aspectRatioForResolution(const QString& size)
             return iter.value();
         }
     }
+
+    fprintf(stderr, "Camres error: Could not find aspect ratio for %dx%d\n", width, height);
 
     return QString("?:?");
 }
