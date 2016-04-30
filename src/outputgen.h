@@ -16,6 +16,11 @@ public:
                   const QList<QList<QPair<QString, QStringList> > >& resolutions,
                   const QRect& screenGeometry,
                   const QString& filename);
+
+    void makeCamhw(const QList<QPair<QString, int> >& cameras,
+                   const QList<QList<QPair<QString, QStringList> > >& resolutions,
+                   const QRect& screenGeometry,
+                   const QString& filename);
 };
 
 #endif // OUTPUTGEN_H

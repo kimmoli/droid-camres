@@ -1,0 +1,55 @@
+[apps/jolla-camera/primary/image]
+imageResolution='@PRIIMAGE43RES@'
+videoResolution='@PRIVIDEORES@'
+viewfinderResolution='@VF43RES@'
+isoValues=[0, 100, 200, 400]
+whiteBalanceValues=[0, 3, 2, 6, 5]
+focusDistanceValues=[8, 4, 16]
+flashValues=[1, 2, 4]
+exposureCompensationValues=[4, 2, 0, -2, -4]
+imageResolution_4_3='@PRIIMAGE43RES@'
+imageResolution_16_9='@PRIIMAGE169RES@'
+viewfinderResolution_4_3='@VF43RES@'
+viewfinderResolution_16_9='@VF169RES@'
+resolutionText_4_3='camera_settings-me-4-3-8m'
+resolutionText_16_9='camera_settings-me-16-9-6m'
+focusDistance=16
+
+[apps/jolla-camera/secondary/image]
+imageResolution='@SECIMAGE43RES@'
+videoResolution='@SECVIDEORES@'
+viewfinderResolution='@VF43RES@'
+isoValues=[0, 100, 200, 400]
+whiteBalanceValues=[0, 3, 2, 6, 5]
+focusDistanceValues=[4]
+flashValues=[2]
+exposureCompensationValues=[4, 2, 0, -2, -4]
+imageResolution_4_3='@SECIMAGE43RES@'
+imageResolution_16_9='@SECIMAGE169RES@'
+viewfinderResolution_4_3='@VF43RES@'
+viewfinderResolution_16_9='@VF169RES@'
+resolutionText_4_3='camera_settings-me-4-3-2m'
+resolutionText_16_9='camera_settings-me-16-9-1m'
+focusDistance=4
+
+[apps/jolla-camera/primary/video]
+imageResolution='@PRIVIDEORES@'
+videoResolution='@PRIVIDEORES@'
+viewfinderResolution='@VF169RES@'
+isoValues=[0, 100, 200, 400]
+whiteBalanceValues=[0, 3, 2, 6, 5]
+focusDistanceValues=[4, 16]
+flashValues=[2]
+exposureCompensationValues=[4, 2, 0, -2, -4]
+focusDistance=16
+
+[apps/jolla-camera/secondary/video]
+imageResolution='@SECVIDEORES@'
+videoResolution='@SECVIDEORES@'
+viewfinderResolution='@VF169RES@'
+isoValues=[0, 100, 200, 400]
+whiteBalanceValues=[0, 3, 2, 6, 5]
+focusDistanceValues=[4]
+flashValues=[2]
+exposureCompensationValues=[4, 2, 0, -2, -4]
+focusDistance=4

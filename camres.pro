@@ -4,10 +4,10 @@ CONFIG += sailfishapp
 CONFIG += link_pkgconfig
 PKGCONFIG += gstreamer-1.0 gstreamer-pbutils-1.0
 
-gep.files = video.gep
-gep.path = /usr/share/camres
+other.files = video.gep jolla-camera-hw.txt
+other.path = /usr/share/camres
 
-INSTALLS += gep
+INSTALLS += other
 
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
@@ -22,4 +22,5 @@ HEADERS += \
 
 OTHER_FILES += \
     rpm/camres.spec \
-    video.gep
+    video.gep \
+    jolla-camera-hw.txt
