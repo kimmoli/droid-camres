@@ -66,6 +66,8 @@ void OutputGen::makeJson(const QList<QPair<QString, int> > &cameras,
 
     fprintf(stderr, "Camres: Writing json to file %s\n", qPrintable(file.fileName()));
 
+    *ts << "{" << endl;
+
     for (i=0 ; i<cameras.size() ; i++)
     {
         if (resolutions.at(i).isEmpty())
