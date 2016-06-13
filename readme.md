@@ -3,6 +3,13 @@ camres
 
 Gets camera resolutions for droidcam
 
+    Usage: camres [OPTION]
+    
+      -o [filename]       Generate json for camera-settings-plugin
+      -w [filename]       Generate dconf for jolla-camera-hw.txt
+
+
+
 Optionally outputs json file for camera-settings-plugin
 
     [nemo@localhost ~]$ camres -o camera-resolutions.json
@@ -204,3 +211,77 @@ camera-resolutions.json
             "viewfinderResolution_16_9" : "1920x1080"
         }
     }
+
+Optional output of jolla-camera-hw.txt
+
+    [nemo@localhost ~]$ camres -w jolla-camera-hw.txt
+    Camres version 0.0.6
+    Searching cameras...
+    Searching resolutions for Primary camera...
+    Searching resolutions for Secondary camera...
+    
+    Resolutions for Primary camera:
+    ...
+    ...
+    ...
+    Camres: Writing dconf settings to file jolla-camera-hw.txt
+    
+jolla-camera-hw.txt
+===================
+
+    [apps/jolla-camera/primary/image]
+    imageResolution='4160x3120'
+    videoResolution='1920x1080'
+    viewfinderResolution='1440x1080'
+    isoValues=[0, 100, 200, 400]
+    whiteBalanceValues=[0, 3, 2, 6, 5]
+    focusDistanceValues=[8, 4, 16]
+    flashValues=[1, 2, 4]
+    exposureCompensationValues=[4, 2, 0, -2, -4]
+    imageResolution_4_3='4160x3120'
+    imageResolution_16_9='3840x2160'
+    viewfinderResolution_4_3='1440x1080'
+    viewfinderResolution_16_9='1920x1080'
+    resolutionText_4_3='camera_settings-me-4-3-8m'
+    resolutionText_16_9='camera_settings-me-16-9-6m'
+    focusDistance=16
+    
+    [apps/jolla-camera/secondary/image]
+    imageResolution='3264x2448'
+    videoResolution='1920x1080'
+    viewfinderResolution='1440x1080'
+    isoValues=[0, 100, 200, 400]
+    whiteBalanceValues=[0, 3, 2, 6, 5]
+    focusDistanceValues=[4]
+    flashValues=[2]
+    exposureCompensationValues=[4, 2, 0, -2, -4]
+    imageResolution_4_3='3264x2448'
+    imageResolution_16_9='1920x1080'
+    viewfinderResolution_4_3='1440x1080'
+    viewfinderResolution_16_9='1920x1080'
+    resolutionText_4_3='camera_settings-me-4-3-2m'
+    resolutionText_16_9='camera_settings-me-16-9-1m'
+    focusDistance=4
+    
+    [apps/jolla-camera/primary/video]
+    imageResolution='1920x1080'
+    videoResolution='1920x1080'
+    viewfinderResolution='1920x1080'
+    isoValues=[0, 100, 200, 400]
+    whiteBalanceValues=[0, 3, 2, 6, 5]
+    focusDistanceValues=[4, 16]
+    flashValues=[2]
+    exposureCompensationValues=[4, 2, 0, -2, -4]
+    focusDistance=16
+    
+    [apps/jolla-camera/secondary/video]
+    imageResolution='1920x1080'
+    videoResolution='1920x1080'
+    viewfinderResolution='1920x1080'
+    isoValues=[0, 100, 200, 400]
+    whiteBalanceValues=[0, 3, 2, 6, 5]
+    focusDistanceValues=[4]
+    flashValues=[2]
+    exposureCompensationValues=[4, 2, 0, -2, -4]
+    focusDistance=4
+    
