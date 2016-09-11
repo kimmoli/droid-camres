@@ -16,6 +16,7 @@ public:
     QList<QPair<QString, QStringList> > getResolutions(int cam, QStringList whichCaps);
     QStringList parse(GstCaps *caps);
     static QString aspectRatioForResolution(const QString& size);
+    static QString findBestViewFinderForResolution(const QString& size, const QList<QPair<QString, QStringList> > &resolutions, const QRect &screenGeometry);
 };
 
 

@@ -3,6 +3,7 @@
 #include <math.h>
 #include <QDir>
 #include <QDebug>
+#include <QRect>
 
 #include <gst/pbutils/encoding-profile.h>
 #include <gst/pbutils/encoding-target.h>
@@ -257,6 +258,40 @@ QString Camres::aspectRatioForResolution(const QString& size)
     }
 
     fprintf(stderr, "Camres error: Could not find aspect ratio for %dx%d\n", width, height);
+
+    return QString("?:?");
+}
+
+QString Camres::findBestViewFinderForResolution(const QString& size, const QList<QPair<QString, QStringList> > &resolutions, const QRect &screenGeometry)
+{
+    int width, height;
+
+    int j, m;
+
+    for (j=0 ; j<resolutions.size(); j++)
+    {
+        if (resolutions.at(j).first.startsWith("viewfinder"))
+        {
+            for (m=0 ; m<resolutions.at(j).second.size(); m++)
+            {
+                width = resolutions.at(j).second.at(m).split("x").at(0).toInt();
+                height = resolutions.at(j).second.at(m).split("x").at(1).toInt();
+
+                if (qMin(screenGeometry.height(), screenGeometry.width()) >=
+                    qMin(width, height) &&
+                    qMax(screenGeometry.height(), screenGeometry.width()) >=
+                    qMax(width, height))
+                {
+                    if (Camres::aspectRatioForResolution(resolutions.at(j).second.at(m)).compare(Camres::aspectRatioForResolution(size)) == 0)
+                    {
+                        return resolutions.at(j).second.at(m);
+                    }
+                }
+            }
+        }
+    }
+
+    fprintf(stderr, "Camres error: Could not find viewfinder for %s\n", qPrintable(size));
 
     return QString("?:?");
 }

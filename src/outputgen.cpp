@@ -52,7 +52,6 @@ void OutputGen::makeJson(const QList<QPair<QString, int> > &cameras,
     int i, j, m;
     QFile file;
     QTextStream *ts = NULL;
-    QString vfr43, vfr169;
 
     file.setFileName(filename);
 
@@ -75,60 +74,42 @@ void OutputGen::makeJson(const QList<QPair<QString, int> > &cameras,
             continue;
         }
 
+        if (i>0)
+            *ts << "," << endl;
+
         *ts << S(4) << "\"" << cameras.at(i).first.split(" ").first().toLower() << "\":" << endl << S(4) << "{" << endl;
 
         for (j=0 ; j<resolutions.at(i).size() ; j++)
         {
-            QStringList res = resolutions.at(i).at(j).second;
-
             if (resolutions.at(i).at(j).first.startsWith("viewfinder"))
             {
-                for (m=0 ; m<res.size() ; m++)
-                {
-                    if (qMin(screenGeometry.height(), screenGeometry.width()) >=
-                        qMin(res.at(m).split("x").at(0).toInt(), res.at(m).split("x").at(1).toInt()) &&
-                        qMax(screenGeometry.height(), screenGeometry.width()) >=
-                        qMax(res.at(m).split("x").at(0).toInt(), res.at(m).split("x").at(1).toInt()))
-                    {
-                        if (Camres::aspectRatioForResolution(res.at(m)).compare("4:3") == 0 && vfr43.isEmpty())
-                        {
-                            vfr43 = res.at(m);
-                        }
-                        else if (Camres::aspectRatioForResolution(res.at(m)).compare("16:9") == 0 && vfr169.isEmpty())
-                        {
-                            vfr169 = res.at(m);
-                        }
-                    }
-                }
+                continue;
             }
-            else
+
+            if (j>0)
+                *ts << "," << endl;
+
+            QStringList res = resolutions.at(i).at(j).second;
+
+            *ts << S(8) << "\"" << resolutions.at(i).at(j).first.split("-").first().toLower() << "\":" << endl << S(8) << "[" << endl;
+
+            for (m=0 ; m<res.size() ; m++)
             {
-                *ts << S(8) << "\"" << resolutions.at(i).at(j).first.split("-").first().toLower() << "\":" << endl << S(8) << "[" << endl;
-
-                for (m=0 ; m<res.size() ; m++)
-                {
-                    *ts << S(12) << "{ \"resolution\": \"" << res.at(m)
-                       << "\", \"aspectRatio\": \"" << Camres::aspectRatioForResolution(res.at(m)) << "\" }"
-                       << ((m == res.size()-1) ? "" : ",") << endl;
-                }
-
-                *ts << S(8) << ((j == 0) ? "]," : "]") << endl;
+                *ts << S(12) << "{ \"resolution\": \"" << res.at(m) << "\", "
+                   << "\"viewFinder\": \"" << Camres::findBestViewFinderForResolution(res.at(m), resolutions.at(i), screenGeometry) << "\", "
+                   << "\"aspectRatio\": \"" << Camres::aspectRatioForResolution(res.at(m)) << "\" }"
+                   << ((m == res.size()-1) ? "" : ",") << endl;
             }
+
+            *ts << S(8) << "]";
         }
-        *ts << S(4) << "}," << endl;
+
+        *ts << endl;
+        *ts << S(4) << "}";
     }
 
-    *ts << S(4) << "\"viewfinder\":" << endl << S(4) << "{" << endl
-        << S(8) << "\"viewfinderResolution_4_3\" : \"" << vfr43 << "\"," << endl
-        << S(8) << "\"viewfinderResolution_16_9\" : \"" << vfr169 << "\"" << endl
-        << S(4) << "}" << endl;
+    *ts << endl;
     *ts << "}" << endl;
-
-    if (vfr43.isEmpty())
-        fprintf(stderr, "Camres error: Not found suitable resolution for 4:3 viewfinder. Check output!\n");
-
-    if (vfr169.isEmpty())
-        fprintf(stderr, "Camres error: Not found suitable resolution for 16:9 viewfinder. Check output!\n");
 
     file.close();
 }
