@@ -5,7 +5,7 @@ CONFIG += link_pkgconfig
 PKGCONFIG += gstreamer-1.0 gstreamer-pbutils-1.0
 
 other.files = video.gep jolla-camera-hw-template.txt
-other.path = /usr/share/camres
+other.path = /usr/share/droid-camres
 
 INSTALLS += other
 
