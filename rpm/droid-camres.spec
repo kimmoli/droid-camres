@@ -10,7 +10,7 @@ Version:    0.0.devel
 Release:    1
 Group:      Qt/Qt
 License:    WTFPL
-URL:        https://github.com/kimmoli/droid-camres
+URL:        https://github.com/mer-hybris/droid-camres
 Source0:    %{name}-%{version}.tar.bz2
 Requires:   sailfishsilica-qt5 >= 0.10.9
 BuildRequires:  pkgconfig(sailfishapp) >= 1.0.2
