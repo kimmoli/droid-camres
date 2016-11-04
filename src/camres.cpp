@@ -99,7 +99,7 @@ QList<QPair<QString, QStringList> > Camres::getResolutions(int cam, QStringList 
     g_object_set(cameraBin, "viewfinder-sink", fakeviewfinder, NULL);
 
     GError *error = NULL;
-    GstEncodingTarget *target = gst_encoding_target_load_from_file("/usr/share/camres/video.gep", &error);
+    GstEncodingTarget *target = gst_encoding_target_load_from_file("/usr/share/droid-camres/video.gep", &error);
 
     if (!target)
     {

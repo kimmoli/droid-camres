@@ -137,7 +137,7 @@ void OutputGen::makeCamhw(const QList<QPair<QString, int> > &cameras,
 
     fprintf(stderr, "Camres: Writing dconf settings to file %s\n", qPrintable(file.fileName()));
 
-    QFile resfile("/usr/share/camres/jolla-camera-hw.txt");
+    QFile resfile("/usr/share/droid-camres/jolla-camera-hw-template.txt");
     QStringList camhwTemplate;
 
     if (!resfile.open(QIODevice::ReadOnly | QIODevice::Text))

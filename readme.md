@@ -1,20 +1,20 @@
-camres
-======
+droid-camres
+============
 
 Gets camera resolutions for droidcam
 
-    Usage: camres [OPTION]
+    Usage: droid-camres [OPTION]
     
       -o [filename]       Generate json for camera-settings-plugin
       -w [filename]       Generate dconf for jolla-camera-hw.txt
 
 
 
-Optionally outputs json file for camera-settings-plugin
+Generating json file for camera-settings-plugin
 
-    [nemo@localhost ~]$ camres -o camera-resolutions.json
-    Camres version 0.0.3
-    usage: camres {-o json-output-filename}
+    [nemo@localhost ~]$ droid-camres -o camera-resolutions.json
+    Camres version 1.0.0
+    usage: droid-camres {-o json-output-filename}
 
     Camres: Writing to file camera-resolutions.json
     Resolutions for Primary camera:
@@ -212,10 +212,10 @@ camera-resolutions.json
         }
     }
 
-Optional output of jolla-camera-hw.txt
+Generation of jolla-camera-hw.txt
 
-    [nemo@localhost ~]$ camres -w jolla-camera-hw.txt
-    Camres version 0.0.6
+    [nemo@localhost ~]$ droid-camres -w jolla-camera-hw.txt
+    Camres version 1.0.0
     Searching cameras...
     Searching resolutions for Primary camera...
     Searching resolutions for Secondary camera...
