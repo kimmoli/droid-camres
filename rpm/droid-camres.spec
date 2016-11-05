@@ -6,7 +6,7 @@ Name:      droid-camres
 %{!?qtc_make:%define qtc_make make}
 %{?qtc_builddir:%define _builddir %qtc_builddir}
 Summary:    Droid Camera resolutions
-Version:    0.0.devel
+Version:    0.0.local
 Release:    1
 Group:      Qt/Qt
 License:    WTFPL
